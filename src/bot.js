@@ -1,4 +1,4 @@
- import Discord, { GuildMember } from 'discord.js';
+import Discord, { GuildMember } from 'discord.js';
 import * as DiscordVoice from '@discordjs/voice';
 import config from '../config/config';
 
