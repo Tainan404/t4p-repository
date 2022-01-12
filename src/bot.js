@@ -1,6 +1,6 @@
-const Discord = require('discord.js');
-const DiscordVoice = require('@discordjs/voice');
-const config = require('./config');
+import Discord from 'discord.js';
+import * as DiscordVoice from '@discordjs/voice';
+import config from '../config/config';
 
 
 const { Intents } = Discord;
@@ -15,6 +15,8 @@ const client = new Discord.Client({
 
 client.on("ready", () => {
   console.log(`Logged in as ${client.user.tag}!`)
+  console.log(Date.now());
+  
 });
 
 
@@ -23,27 +25,24 @@ client.on("messageCreate", async (msg) => {
   if (msg.content === 'ping'){    
     client.channels.fetch(msg.channelId)
       .then((channel)=>{ 
-        channel.send('Pong');
+        channel.send('Pong')
+        .then(message => {
+          console.log(`Sent message: ${message.content}`);
+          setTimeout(() => {
+            message.delete();
+          }, 1000);
+        })
       });
     setTimeout(()=> msg.delete(), 1000);
   }
 
   if (msg.content === 'oi'){    
-    const voiceChannel = client.channels.cache.find((channel)=> {
-      let isTheChannel = false;
-      
-      if (channel.isVoice()){
-        channel.members.each((v)=> {
-          console.log('v',v.user.id);
-          if (v.user.id === msg.author.id){
-            isTheChannel = true;
-          }
-        });
-      }
-      return isTheChannel;
-    });
+    const guild = await client.guilds.fetch(msg.guildId);
+    const member = await guild.members.fetch(msg.author.id);
+    const voiceChannel = member.voice.channel;
 
     if (voiceChannel){
+      
       const connection = DiscordVoice.joinVoiceChannel({
         channelId: voiceChannel.id,
         guildId: voiceChannel.guild.id,
@@ -51,7 +50,7 @@ client.on("messageCreate", async (msg) => {
       });
     
       try {
-        await DiscordVoice.entersState(connection, DiscordVoice.VoiceConnectionStatus.Ready, 30e3);
+        await DiscordVoice.entersState(connection, DiscordVoice.VoiceConnectionStatus.Ready);
       } catch (error) {
         connection.destroy();
         throw error;
@@ -65,6 +64,7 @@ client.on("messageCreate", async (msg) => {
   }
 
   if(msg.content === 'tchau'){
+    msd
     const voiceChannel = client.channels.cache.find((channel)=> {
       let isTheChannel = false;
       if (channel.isVoice()){
@@ -79,7 +79,7 @@ client.on("messageCreate", async (msg) => {
 
     const myBotConnection = voiceChannel.members.find((member) => {
       let isTheUser = false;
-      console.log('member',member.user);
+      console.log('member',member.user  );
       const user = member.user;
       if (user.bot) {
         if (user.id === '892886655197929492') {
